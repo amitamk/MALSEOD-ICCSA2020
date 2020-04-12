@@ -1,0 +1,5 @@
+Erro: Figure Mask: 17-Dec-2019 11:06:41
+	Message: Output argument "bw_mask" (and maybe others) not assigned during call to "figure_mask".
+Mask Prediction: 17-Dec-2019 11:06:42
+Gera_figuras_areas: 17-Dec-2019 11:09:21
+Gera_figuras_areas_synthetic: 17-Dec-2019 11:09:21
