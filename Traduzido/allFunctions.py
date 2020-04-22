@@ -66,11 +66,12 @@ def calc_mu_hmi(thresh):
 
 
 def check_areas():
-    #path='C:\\Users\Ami\Dropbox\Tese\Traduzido\\'
+    
+    #partialOutputPath= path + 'partial_output_files\\'
 
-    time = np.loadtxt(path+'time.csv')
-    area_c = np.loadtxt(path+'area_c.csv')
-    alpha_mu_spot = np.loadtxt(path+'alpha_mu_spot.csv')
+    time = np.loadtxt(partialOutputPath+'time_PY.csv')
+    area_c = np.loadtxt(partialOutputPath+'area_c_PY.csv')
+    alpha_mu_spot = np.loadtxt(partialOutputPath+'alpha_mu_spot_PY.csv')
     #alpha_mu_spot = np.loadtxt(path+'FileName.txt')
     
     alpha_mu_spot = np.reshape(alpha_mu_spot,(np.size(time),6,11))
@@ -120,14 +121,14 @@ def check_areas():
         for i in range(n[2]):
             alpha_mu_spot[kk,j,i] = le_interp(time[kk],alpha_mu_spot[kk,j,i])
         
-    print('\nArquivos salvos em '+path+' :\n')
-    np.savetxt(path+'\\check_areas_time.csv', time)
-    print('check_areas_time.csv\n')
+    print('\nArquivos salvos em '+partialOutputPath+':\n')
+    np.savetxt(partialOutputPath+'check_areas_time_PY.csv', time)
+    print('check_areas_time_PY.csv\n')
     
-    np.savetxt(path+'\\check_areas_area_c.csv', area_c)
-    print('check_areas_area_c.csv\n')
+    np.savetxt(partialOutputPath+'check_areas_area_c_PY.csv', area_c)
+    print('check_areas_area_c_PY.csv\n')
     
-    with open(path+'\\check_areas_alpha_mu_spot.csv', 'w') as outfile:
+    with open(partialOutputPath+'check_areas_alpha_mu_spot_PY.csv', 'w') as outfile:
         # I'm writing a header here just for the sake of readability
         # Any line starting with "#" will be ignored by numpy.loadtxt
         outfile.write('# Array shape: {0}\n'.format(alpha_mu_spot.shape))
@@ -141,8 +142,7 @@ def check_areas():
 
             np.savetxt(outfile, dataSlice, fmt='%-7.5f')
     
-    
-    print('check_areas_alpha_mu_spot.csv\n')
+    print('check_areas_alpha_mu_spot_PY.csv\n')
 
     return time, area_c, alpha_mu_spot
 
@@ -181,7 +181,7 @@ def continuumMasks(pathImagemContinua,bw_mask):
         bw = np.zeros_like(x2)
         bw[np.where(x2<=th)] = 1
         
-        '''TESTAR NOVAMENTE A AFORMAÇÃO ABAIX0:
+        '''TESTAR NOVAMENTE A INFORMAÇÃO ABAIX0:
         NO MATLAB, PARA A IMAGEM DE 25/09/2019, 00:00:00 (20190925_000000_Ic_flat_1k.jpg), 
         NÃO "SOBRA" NENHUM TRUE APÓS O IMCLEARBORDER. JÁ NO PYTHON, "SOBRA" 1024 TRUES APÓS O CLEAR_BORDER.'''
         bw2 = clear_border(bw).astype(int) 
@@ -287,7 +287,6 @@ def geraAreas():
                 tSeconds = dataDaVez.second/(24*60*60)
                 t_obs_preliminary = dataDaVez.toordinal()+tHours+tMinutes+tSeconds
                 #t_obs_preliminary = dataDaVez.toordinal()+tHours+tMinutes+tSeconds+366
-                
             
                 area_disk, bw_mask = imageMasks(nomeImagem)
                 
@@ -356,14 +355,14 @@ def geraAreas():
             
         dataDaVez = dataDaVez + timedelta(minutes=resolucao)
     
-    print('\nArquivos salvos em '+path+' :\n')
-    np.savetxt(path+'\\time.csv', time)
-    print('time.csv\n')
+    print('\nArquivos salvos em '+partialOutputPath+' :\n')
+    np.savetxt(partialOutputPath+'\\time_PY.csv', time)
+    print('time_PY.csv\n')
     
-    np.savetxt(path+'\\area_c.csv', area_c)
-    print('area_c.csv\n')
+    np.savetxt(partialOutputPath+'\\area_c_PY.csv', area_c)
+    print('area_c_PY.csv\n')
     
-    with open(path+'\\alpha_mu_spot.csv', 'w') as outfile:
+    with open(partialOutputPath+'\\alpha_mu_spot_PY.csv', 'w') as outfile:
         # I'm writing a header here just for the sake of readability
         # Any line starting with "#" will be ignored by numpy.loadtxt
         outfile.write('# Array shape: {0}\n'.format(alpha_mu_spot.shape))
@@ -371,13 +370,10 @@ def geraAreas():
         # Iterating through a ndimensional array produces slices along
         # the last axis. This is equivalent to data[i,:,:] in this case
         for dataSlice in alpha_mu_spot:
-    
-            # Writing out a break to indicate different slices...
             outfile.write('# New slice\n')
-    
             np.savetxt(outfile, dataSlice, fmt='%-7.5f')
     
-    print('alpha_mu_spot.csv\n')
+    print('alpha_mu_spot_PY.csv\n')
     #return alpha_mu_spot,area_c,time
 
 def imageMasks(nomeImagem):
@@ -389,7 +385,7 @@ def imageMasks(nomeImagem):
     pathImagemMag = pathMag + '\\' + nomeImagem + sufixoMag            
     
     bw_mask = np.zeros((1024,1024))
-
+    
     try:
         bw_mask, area_disk = magMasks(pathImagemMag,bw_mask)
     except:
@@ -603,7 +599,7 @@ def model_mdi_02_03():
     F_f = np.squeeze(alpha[:,3,:] - alpha[:,4,:] - alpha[:,5,:])
     
     '''QUE DATA É ESSA??? '''
-    kk = np.array(np.where((t > date.toordinal(datetime(2012,3,14))) & np.isfinite(F_f[0,:])))
+    kk = np.array(np.where((t >= date.toordinal(dataInicial)) & np.isfinite(F_f[0,:])))
     kk = np.squeeze(kk)
     ds = 1
     
@@ -614,6 +610,19 @@ def model_mdi_02_03():
                   np.squeeze(alpha[:10,3,kk[:len(kk)-(ds)]]), 
                   np.squeeze(alpha[:10,4,kk[:len(kk)-(ds)]]),
                   np.squeeze(alpha[:10,5,kk[:len(kk)-(ds)]])])
+
+    with open(partialOutputPath+'\\P_PY3D.csv', 'w') as outfile:
+        outfile.write('# Array shape: {0}\n'.format(P.shape))
+
+        slice=0
+        #print('Saving slices: '),
+        for dataSlice in P:
+            outfile.write('# New slice\n')
+            np.savetxt(outfile, dataSlice, fmt='%-7.5f')
+            slice+=1
+            #print(str(slice)+'\t'),
+        
+    print('Arquivo salvo: '+partialOutputPath+'\\P_PY3D.csv')
     
     P = P.reshape(P.shape[0]*P.shape[1],len(period)-1)
     T = T.transpose()
@@ -623,14 +632,14 @@ def model_mdi_02_03():
     #T[nans] = np.interp(x(nans), x(~nans), T[~nans])
 
     #P = np.transpose(P)
-    print('\nMatrizes não normalizadas salvas em '+path+' :\n')
-    np.savetxt(path+'\\P_PY.csv', P)
+    print('\nMatrizes não normalizadas salvas em '+partialOutputPath+' :\n')
+    np.savetxt(partialOutputPath+'\\P_PY.csv', P)
     print('P_PY.csv\n')
     
-    np.savetxt(path+'\\T_PY.csv', T)
+    np.savetxt(partialOutputPath+'\\T_PY.csv', T)
     print('T_PY.csv\n')
     
-    rnn(P,T)
+    #rnn(P,T)
 
 def read_tim_tsi():
     

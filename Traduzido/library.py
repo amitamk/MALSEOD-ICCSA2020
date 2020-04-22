@@ -12,6 +12,7 @@ from keras.layers import LSTM
 from keras.layers import SimpleRNN
 from keras.layers import GRU
 from keras.layers import Dropout
+from keras.layers import Masking
 from keras.callbacks import Callback
 
 import math
@@ -22,6 +23,7 @@ import matplotlib.image as mpimg
 import numpy as np
 from numpy import matlib
 from numpy import interp
+import numpy.ma as ma
 
 import os
 import os.path
@@ -34,6 +36,7 @@ from pandas import read_csv
 
 from scipy.interpolate import interp1d
 from scipy.ndimage import convolve
+#from scipy import stats
 
 from skimage.measure import label, regionprops
 from skimage.segmentation import clear_border
