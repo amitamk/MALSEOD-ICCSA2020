@@ -47,3 +47,38 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.model_selection import GridSearchCV
 
 from urllib import request
+
+#(469,40)
+
+def lookBack(x,y,n):
+    xAux = []
+    yAux = []
+    for i in range(n,x.shape[0]):
+        xAux.append(x[i-n:i,:])
+        yAux.append(y[i-1])
+    
+    return xAux, yAux
+    
+def preparingData():
+    P = np.asarray(np.loadtxt('./partial_output_files/P_PY.csv'))
+    T = np.asarray(np.loadtxt('./partial_output_files/T_PY.csv'))
+    P = np.transpose(P)
+    T = T.reshape(-1,1)
+    scaler = StandardScaler()
+
+    pn = scaler.fit_transform(P)
+    tn = scaler.fit_transform(T)
+
+    seriesSize = len(tn)
+    
+    #print('\nArquivos salvos em '+path+' :\n')
+    np.savetxt('./partial_output_files/pn_PY.csv', pn)
+    #print('pn_PY.csv\n')
+
+    np.savetxt('./partial_output_files/tn_PY.csv', tn)
+    #print('tn_PY.csv\n')
+    
+    mask_value = 2
+    tn[np.where(np.isnan(tn))] = mask_value
+    
+    return pn, tn
