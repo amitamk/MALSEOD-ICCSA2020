@@ -51,11 +51,15 @@ from urllib import request
 #(469,40)
 
 def lookBack(x,y,n):
-    xAux = []
-    yAux = []
-    for i in range(n,x.shape[0]):
-        xAux.append(x[i-n:i,:])
-        yAux.append(y[i-1])
+    if n>0:
+        xAux = []
+        yAux = []
+        for i in range(n,x.shape[0]+1):
+            xAux.append(x[i-n:i,:])
+            yAux.append(y[i-1])
+    else:
+        xAux = x
+        yAux = y
     
     return xAux, yAux
     
@@ -81,4 +85,4 @@ def preparingData():
     mask_value = 2
     tn[np.where(np.isnan(tn))] = mask_value
     
-    return pn, tn
+    return p, t
